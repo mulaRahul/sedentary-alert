@@ -8,8 +8,6 @@ from time import sleep
 # assets
 ASSETS = "assets"
 
-SUN_VALLEY_THEME = path.join("SunValley",
-                             "sun-valley.tcl")
 APP_ICO = path.join(ASSETS, "app.ico")
 COFFE_ICO = path.join(ASSETS, "coffe.ico")
 DOLPHIN_WAV = path.join(ASSETS, "dolphin.wav")
@@ -82,6 +80,6 @@ def sed_alert():
                 icon=COFFE_ICO,
             )
         except ImportError:
-            print("Modules not found")
+            print("Can't display notification because some modules aren'nt found")
         
         sed_alert()

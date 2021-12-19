@@ -13,10 +13,6 @@ App.title("Sedentary Alert")
 App.iconbitmap(APP_ICO)
 App.resizable(False, False)
 
-# setting theme
-App.tk.call("source", SUN_VALLEY_THEME)
-App.tk.call("set_theme", "dark")
-
 # Sedentry Frame
 sed_frame = ttk.LabelFrame(
     App, text="Sedentry Alert", padding=10
