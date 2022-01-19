@@ -30,39 +30,50 @@ def update_json(jsdata:dict):
         )
 
 
-# notifier
-def _notify(
-    msg,
-    icon,
-    title=None,
-    soundfile=DOLPHIN_WAV,
-):
-    os_platform =  platform.system()
-    if os_platform == 'Windows':
-            import winsound
-            from win10toast import ToastNotifier
-            toaster = ToastNotifier()
-            
-            toaster.show_toast(
-                title=title if title else "Notification",
-                msg=msg,
-                icon_path=icon,
-                threaded=True,
+# Using if instead of match so that it 
+# works on python versions below 3.10
+os_platform =  platform.system()
+if os_platform == 'Windows':    
+
+    def _notify(
+        msg,
+        icon=COFFE_ICO,
+        title=None,
+        soundfile=DOLPHIN_WAV,
+    ):
+
+        import winsound
+        from win10toast import ToastNotifier
+        toaster = ToastNotifier()
+        
+        toaster.show_toast(
+            title=title if title else "Notification",
+            msg=msg,
+            icon_path=icon,
+            threaded=True,
+        )
+        if soundfile:
+            winsound.PlaySound(
+                soundfile, winsound.SND_FILENAME
             )
-            if soundfile:
-                winsound.PlaySound(
-                    soundfile, winsound.SND_FILENAME
-                )
             
-    elif os_platform == 'Darwin': # mac
-            from playsound import playsound
-            
-            title = title if title else "Notification"
-            os.system("osascript -e 'display notification"
-                      f' "{msg}" with title "{title}"\'')
-            
-            if soundfile:
-               playsound(soundfile)
+elif os_platform == 'Darwin': # mac
+    
+    def _notify(
+        msg,
+        title=None,
+        soundfile=DOLPHIN_WAV,
+    ):
+        from playsound import playsound
+        
+        title = title if title else "Notification"
+        # command: osascript -e 'display notification "message" with "title"'
+        # the script is with-in single quotes and
+        # message & title within double quotes
+        os.system(f"""osascript -e 'display notification "{msg}" with title "{title}"'""")
+        
+        if soundfile:
+            playsound(soundfile)
 
 
 def sed_alert():
@@ -71,15 +82,12 @@ def sed_alert():
     if dt["sedentary_alert"]:
         interval = min_to_sec(dt["interval"])
         sleep(interval)
-        try:
-            _notify(
+
+        _notify(
                 title="Sedentary Alert",
                 msg=("Drink water, fix "
                     "your posture and keep "
-                    "blinking your eyes!"),
-                icon=COFFE_ICO,
+                    "blinking your eyes!")
             )
-        except ImportError:
-            print("Can't display notification because some modules aren'nt found")
         
         sed_alert()
